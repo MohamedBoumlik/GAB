@@ -4,6 +4,8 @@ const { billMail } = ('../src/utils/mail.js');
 const nodemailer = require('nodemailer')
 const hbs = require('nodemailer-express-handlebars')
 
+// -------------------------- authenticate --------------------------
+
 exports.authenticate = async(req, res) => {
 
     const { bin, password } = req.body;
@@ -29,6 +31,8 @@ exports.authenticate = async(req, res) => {
     }
 
 }
+
+// -------------------------- phoneBill --------------------------
 
 exports.phoneBill = async(req, res) => {
 
@@ -106,6 +110,8 @@ exports.phoneBill = async(req, res) => {
 
 }
 
+// -------------------------- car tax --------------------------
+
 exports.carTax= async(req, res) => {
     const { vehicleNumber, tax } = req.body;
 
@@ -133,5 +139,62 @@ exports.carTax= async(req, res) => {
 
     } catch (error) {
         
+    }
+}
+
+// -------------------------- Ticket --------------------------
+exports.ticket = async(req, res) => {
+    const { bill, email } = req.body;
+
+    try {
+        
+        const foundClient = await Client.findOne({ email });
+        if(!foundClient){
+            res.status(404).send({ message:"User's email not found !" })
+        }else{
+            
+            if(foundClient.sold > bill){
+                let newSold = await foundClient.sold - bill
+                Client.findByIdAndUpdate(foundClient._id, { sold: newSold }, { new: true }, (err, client) => {
+                    if (err) {
+                        res.status(400).send({ error: err });
+                    } else {
+
+                        // -------------------------- sending mail --------------------------
+
+                        let transporter = nodemailer.createTransport({
+                            service: 'gmail',
+                            auth: {
+                                user: process.env.EMAIL,
+                                pass: process.env.PASSWORD,
+                            }
+                        });
+                          
+                        let mailOptions = {
+                            from: process.env.EMAIL,
+                            to: foundClient.email,
+                            subject: 'Ticket',
+                            text: 'Travel safe !'
+                        };
+                          
+                        transporter.sendMail(mailOptions, function(error, info){
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              console.log('Email sent: ' + info.response);
+                            }
+                        });
+
+                        res.status(200).send({ sold: client.sold, message: "You have successfully paid your ticket" });
+                    }
+                });
+            }else{
+                res.status(400).send({ message: "You don't have enough money " });  
+            }
+
+        }
+
+    } catch (error) {
+        res.status(400).json({ error: error.message })
     }
 }
