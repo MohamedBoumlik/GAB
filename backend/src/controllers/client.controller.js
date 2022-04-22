@@ -143,6 +143,7 @@ exports.carTax= async(req, res) => {
 }
 
 // -------------------------- Ticket --------------------------
+
 exports.ticket = async(req, res) => {
     const { bill, email } = req.body;
 
@@ -192,6 +193,32 @@ exports.ticket = async(req, res) => {
                 res.status(400).send({ message: "You don't have enough money " });  
             }
 
+        }
+
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+}
+
+// -------------------------- recharge --------------------------
+
+exports.recharge = async(req, res) => {
+    const { amount, phoneNum } = req.body;
+
+    try {
+        
+        const foundClient = await Client.findOne({ phone: phoneNum });
+        if(!foundClient){
+            res.status(404).send({ message:"User's phone number not found !" })
+        }else{
+            let newSold = await foundClient.sold - amount
+            Client.findByIdAndUpdate(foundClient._id, { sold: newSold }, { new: true }, (err, client) => {
+                if (err) {
+                    res.status(400).send({ error: err });
+                } else {
+                    res.status(200).send({ sold: client.sold, message: "You have successfully recharge your phone" });
+                }
+            });
         }
 
     } catch (error) {
