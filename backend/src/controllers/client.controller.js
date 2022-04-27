@@ -145,7 +145,7 @@ exports.carTax= async(req, res) => {
 // -------------------------- Ticket --------------------------
 
 exports.ticket = async(req, res) => {
-    const { bill, email } = req.body;
+    const { bill, email, from ,to } = req.body;
 
     try {
         
@@ -174,7 +174,7 @@ exports.ticket = async(req, res) => {
                         let mailOptions = {
                             from: process.env.EMAIL,
                             to: foundClient.email,
-                            subject: 'Ticket',
+                            subject: 'Your Ticket  ('+from+' to '+to+')',
                             text: 'Travel safe !'
                         };
                           
