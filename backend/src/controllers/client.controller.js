@@ -26,8 +26,7 @@ exports.authenticate = async(req, res) => {
             }
         );
         
-        res.status(200).send({token, sold: foundClient.sold,  message: "You logged in successfully"});
-        // session.set('token', token);
+        res.status(200).send({token, sold: foundClient.sold, id:foundClient._id, bin:foundClient.bin, password:foundClient.password, message: "You logged in successfully"});
     }
 
 }
