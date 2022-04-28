@@ -19,10 +19,12 @@ const LogIn: React.FC = () => {
 
       let token = res.data.token;
       let sold = res.data.sold;
+      let email = res.data.email;
       
       if (res.data.bin === bin && res.data.password === password) {
         localStorage.setItem("token", token);
-        localStorage.setItem("solde", sold);;
+        localStorage.setItem("solde", sold);
+        localStorage.setItem("email", email);
         
         navigate("/home", { replace: true });
       }
@@ -48,13 +50,6 @@ const LogIn: React.FC = () => {
             <div className="w-full flex justify-start">
               <img src="src/assets/chip.png" alt="" className="w-16 ml-10" />
             </div>
-            {/* <input
-              type="text"
-              value={'123'}
-              onChange={(e)=>{setBin(e.target.value)}}
-              disabled
-              className="w-4/5 bg-transparent text-2xl text-center"
-            /> */}
             <input
               type="text"
               placeholder="Bin"

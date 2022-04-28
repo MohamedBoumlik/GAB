@@ -26,7 +26,7 @@ exports.authenticate = async(req, res) => {
             }
         );
         
-        res.status(200).send({token, sold: foundClient.sold, id:foundClient._id, bin:foundClient.bin, password:foundClient.password, message: "You logged in successfully"});
+        res.status(200).send({token, sold: foundClient.sold, id:foundClient._id, bin:foundClient.bin, password:foundClient.password,email:foundClient.email, message: "You logged in successfully"});
     }
 
 }
@@ -173,7 +173,7 @@ exports.ticket = async(req, res) => {
                         let mailOptions = {
                             from: process.env.EMAIL,
                             to: foundClient.email,
-                            subject: 'Your Ticket  ('+from+' to '+to+')',
+                            subject: 'Your Ticket',
                             text: 'Travel safe !'
                         };
                           

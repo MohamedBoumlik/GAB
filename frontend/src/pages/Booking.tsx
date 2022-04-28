@@ -1,20 +1,45 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { GiReturnArrow } from 'react-icons/gi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Booking: React.FC = () => {
 
     const [cities, setCities] = useState<any>([]);
+    const [bill, setBill] = useState('');
+    const [from, setFrom] = useState('');
+    const [to, setTo] = useState('');
+    let navigate = useNavigate();
+    
+    
+    const infos = {
+      bill: 250,
+      email: localStorage.getItem('email'),
+      from: from,
+      to: to
+    }
 
     useEffect(() => {
       fetch('https://calm-fjord-14795.herokuapp.com/api/villes')
-            .then(res => res.json())
-            .then(data => {
-                console.log(data.res);
-                setCities(data);
-            })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data.res);
+          setCities(data);
+        })
     }, []);
+
+    const Book = () => {
+      axios.post('http://localhost:4000/api/client/ticket',infos)
+      .then(res => {
+        
+        if (res.data) {
+          navigate("/home", { replace: true });
+        }
+
+      })
+      .catch(err => console.warn(err))
+    }
 
   return (
     <div className="h-screen w-screen flex justify-center items-center bg-black/50">
@@ -37,7 +62,7 @@ const Booking: React.FC = () => {
               <div className="card-actions flex flex-col w-full">
                 <div className="flex flex-col w-full items-center">
                   <label htmlFor="">ville de départ</label>
-                  <select name="" id="" className="w-4/5 py-2 rounded-md">
+                  <select name="" id="" className="w-4/5 py-2 rounded-md"onChange={(e)=>{setFrom(e.target.value)}}>
                     <option value="">choisir</option>
                     {cities.map((city: any) => (
                       <option value="" key={city.id}>
@@ -49,7 +74,7 @@ const Booking: React.FC = () => {
 
                 <div className="flex flex-col w-full items-center mb-2">
                   <label htmlFor="">ville d'arriver </label>
-                  <select name="" id="" className="w-4/5 py-2 rounded-md">
+                  <select name="" id="" className="w-4/5 py-2 rounded-md" onChange={(e)=>{setTo(e.target.value)}}>
                     <option value="">choisir</option>
                     {cities.map((city: any) => (
                       <option value="" key={city.id}>
@@ -58,8 +83,6 @@ const Booking: React.FC = () => {
                     ))}
                   </select>
                 </div>
-
-
                   <input
                     type="text"
                     name=""
@@ -67,7 +90,7 @@ const Booking: React.FC = () => {
                     value='250'
                     className="w-4/5 py-2 rounded-md hidden"
                   />
-                <button className="btn text-gray-800">submit</button>
+                <button className="btn text-gray-800" onClick={Book}>submit</button>
               </div>
             </div>
           </div>
